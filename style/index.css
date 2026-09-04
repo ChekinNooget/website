@@ -1,0 +1,71 @@
+:root {
+	--background: gray;
+}
+
+body {
+	margin: 0px;
+	height: 100vh;
+	background-color: antiquewhite;
+	font-family: "Lato", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	background-color: darkgray;
+}
+
+.tab_group {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 10px;
+	justify-content: center;
+	border: 1px solid black;
+}
+.tab_item {
+	background-color: var(--background);
+	height: 20px;
+	overflow: hidden;
+	white-space: nowrap;
+
+	padding: 5px;
+	margin: 0px;
+	cursor: pointer;
+	border: 1px black solid;
+	min-width: calc(20% - 12px);
+	width: min-content;
+
+	display: flex;
+	flex-grow: 1;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+.tab_item.selected {
+	background-color: white;
+}
+.was_selected {
+	background-color: lightgray;
+}
+
+/*footer*/
+.footer {
+	position: fixed;
+	bottom: 0;
+	height: 50px;
+	padding: 5px;
+	background-color: var(--background);
+	width: calc(100% - 10px);
+}
+body::after {
+	/*this is the same height as footer so that it doesn't break on tall pages*/
+	content: "";
+	display: block;
+	bottom: 0;
+	width: 100%;
+	height: 60px;
+}
+
+a {
+	color: aqua;
+}
+a:visited {
+	color: rgb(37, 167, 167);
+}

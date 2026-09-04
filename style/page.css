@@ -1,0 +1,53 @@
+.main_content_wrapper {
+	margin: 20px;
+	padding: 35px;
+
+	background-color: black;
+	color: white;
+
+	/*border around the page*/
+	background-image: url("../images/ui/border_corner1.png"), url("../images/ui/border_corner2.png"), url("../images/ui/border_corner3.png"),
+		url("../images/ui/border_corner4.png"), url("../images/ui/border_top.png"), url("../images/ui/border_right.png"), url("../images/ui/border_bottom.png"),
+		url("../images/ui/border_left.png");
+	background-position: left top, right top, right bottom, left bottom, top, right, bottom, left;
+	background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y;
+	image-rendering: pixelated;
+}
+
+.center {
+	display: flex;
+	justify-content: center;
+}
+.right {
+	display: flex;
+	justify-content: right;
+}
+
+.i {
+	font-style: italic;
+}
+.b {
+	font-weight: bold;
+}
+
+.space_evenly {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+
+.float_right {
+	float: right;
+	padding: 25px;
+}
+.float_left {
+	float: left;
+	padding: 25px;
+}
+
+.tile_header {
+	height: 100px;
+	background-repeat: repeat-x;
+	background-size: contain;
+	background-position: center;
+}
