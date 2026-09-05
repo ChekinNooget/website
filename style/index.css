@@ -1,26 +1,30 @@
 :root {
-	--background: gray;
+	--tab-background: #a97c03;
+    --tab-was-selected-background: #dea50b;
+    --tab-selected-background: #ffc018;
+
+    --main-background: #5a2e00;
 }
 
 body {
 	margin: 0px;
 	height: 100vh;
-	background-color: antiquewhite;
 	font-family: "Lato", sans-serif;
 	font-weight: 400;
 	font-style: normal;
-	background-color: darkgray;
+    background-color: var(--main-background);
 }
 
 .tab_group {
 	display: flex;
 	flex-wrap: wrap;
-	margin-bottom: 10px;
+	/*margin-bottom: 10px;*/
+    margin-bottom: -1px;
 	justify-content: center;
 	border: 1px solid black;
 }
 .tab_item {
-	background-color: var(--background);
+	background-color: var(--tab-background);
 	height: 20px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -38,11 +42,11 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-.tab_item.selected {
-	background-color: white;
-}
 .was_selected {
-	background-color: lightgray;
+	background-color: var(--tab-was-selected-background);
+}
+.tab_item.selected {
+	background-color: var(--tab-selected-background);
 }
 
 /*footer*/
@@ -51,7 +55,7 @@ body {
 	bottom: 0;
 	height: 50px;
 	padding: 5px;
-	background-color: var(--background);
+	background-color: var(--tab-background);
 	width: calc(100% - 10px);
 }
 body::after {
