@@ -29,12 +29,12 @@ window.addEventListener("load", function () {
 });
 
 function onTabClick(name) {
-	var tempGetRecursive = getRecursive(currentPath.concat(name));
+	var tempGetChildren = getChildrenOfPath(currentPath.concat(name));
 
-	if (tempGetRecursive != false) {
+	if (tempGetChildren != false) {
 		currentPath = currentPath.concat(name);
 		currentFilePath = currentFilePath.concat(name);
-	} else if (tempGetRecursive.length == 0) {
+	} else if (tempGetChildren.length == 0) {
 		currentPath = currentPath.concat(name);
 		currentFilePath = currentFilePath.concat(name);
 	} else {
@@ -73,8 +73,9 @@ function onTabClick(name) {
 	for (let i = 0; i < currentPath.length + 1; i++) {
 		//add tabs for user to click
 		temp = "";
-		for (let j = 0; j < getRecursive(currentPath.slice(0, i)).length; j++) {
-			var tempTabName = getRecursive(currentPath.slice(0, i))[j];
+        var tempSlicedChildren = getChildrenOfPath(currentPath.slice(0, i))
+		for (let j = 0; j < tempSlicedChildren.length; j++) {
+			var tempTabName = tempSlicedChildren[j];
 			temp += `<div class="tab_item" onClick="onTabClick('${tempTabName}')">${tempTabName}</div>`;
 		}
 
@@ -130,7 +131,7 @@ function onTabClick(name) {
 	//loadImages() do this eventually
 }
 
-function getRecursive(path, changeRedirect = false) {
+function getChildrenOfPath(path, changeRedirect = false) {
 	var tempString = "";
 	redirectPath = path;
 
@@ -151,15 +152,24 @@ function getRecursive(path, changeRedirect = false) {
 				if (i < path.length - 1) {
 					redirectPath = newPath.concat(redirectPath.slice(i + 1, path.length));
 				}
+                /*
+                console.log("newPath: " + newPath)
+                console.log("tempString: " + tempString)
+                console.log("redirectPath: " + redirectPath)
+                */
 			}
 		} catch (err) {}
 	}
-    
+    /*
+    console.log("FINAL: " + newPath)
+    console.log("tempString: " + tempString)
+    console.log("redirectPath: " + redirectPath)
+    */
 	try {
 		var childTabs = eval(`Object.keys(data${tempString})`);
 		return childTabs;
 	} catch (err) {
-		console.log("Error in getRecursive: " + err);
+		//console.log("Error in getChildrenOfPath: " + err);
 		return false;
 	}
 }
