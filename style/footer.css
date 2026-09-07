@@ -1,0 +1,16 @@
+.footer {
+	position: fixed;
+	bottom: 0;
+	height: 50px;
+	padding: 5px;
+	background-color: var(--tab-background);
+	width: calc(100% - 10px);
+}
+body::after {
+	/*this is the same height as footer so that it doesn't break on tall pages*/
+	content: "";
+	display: block;
+	bottom: 0;
+	width: 100%;
+	height: 60px;
+}

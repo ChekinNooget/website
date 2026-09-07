@@ -1,0 +1,36 @@
+.tab_group {
+	display: flex;
+	flex-wrap: wrap;
+	/*margin-bottom: 10px;*/
+	margin-bottom: -1px;
+	justify-content: center;
+	border: 1px solid black;
+}
+
+.tab_item {
+	background-color: var(--tab-background);
+	height: 20px;
+	overflow: hidden;
+	white-space: nowrap;
+
+	padding: 5px;
+	margin: 0px;
+	cursor: pointer;
+	border: 1px black solid;
+	min-width: calc(20% - 12px);
+	width: min-content;
+
+	display: flex;
+	flex-grow: 1;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.tab_item.was_selected {
+	background-color: var(--tab-was-selected-background);
+}
+
+.tab_item.selected {
+	background-color: var(--tab-selected-background);
+}

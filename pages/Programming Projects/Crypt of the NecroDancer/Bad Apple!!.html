@@ -1,4 +1,95 @@
-<p>bapple</p>
-<a href="https://github.com/ChekinNooget/bad-apple-necrodancer" target="_blank">https://github.com/ChekinNooget/bad-apple-necrodancer</a>
-<br />
-<div class = "youtube_video">https://www.youtube.com/watch?v=duxXGIAbWrY</div>
+<h1>Bad Apple!! in Crypt of the NecroDancer</h1>
+<p>I was watching a bunch of Bad Apple!! videos one day, and thought to myself, "hey, i could probably make this too!" As far as I know, no one else has made Bad Apple!! in Crypt of the NecroDancer, so I thought I'd give it a go. After a few days of effort, I think the result is pretty nice!</p>
+<div class="youtube-video">https://www.youtube.com/watch?v=duxXGIAbWrY</div>
+<p>It actually turned out to be easier to make than I expected, even though I didn't know much about Lua (NecroDancer's modding language), python (which I used to extract frame data), and NecroDancer's modding API itself.</p>
+<p>There were two parts to this project. Number 1 was getting the frame data, so that I could import it into part two, which was rendering the frames inside the game.</p>
+<p>Getting the frame data wasn't too much of an issue once I figured out what I was going to do and how I was going to do it. At first, I was lazy, and tried to find preexisting frame data for the entire Bad Apple!! video. I found <a href="https://github.com/kevinjycui/bad-apple" target="_blank">this person</a> who had done many Bad Apple!! videos before, but when putting the file into a NecroDancer mod, it would throw errors because the file was too large. Eventually, I realized I should probably just generate the frame data myself.</p>
+<p>I had a kind of hacky solution to this. I would first resize the original Bad Apple!! video to whatever size I'd wanted using a python script, then get the data from each pixel frame-by-frame, rounding gray pixels to white or black, depending on which was closer. I'm surprised it worked as well as it did.</p>
+<pre class="code-snippet">
+#this exports all of the data in the video
+#90% stolen from the internet again
+
+import cv2
+cap = cv2.VideoCapture("bad_apple trimmed resized.mp4")
+
+print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+allFrames = []
+
+#i just did a for loop with a large number because while loops don't have indexes (or if there are idk how to use it lol)
+for i in range(1000):
+    #setup one frame at a time
+    oneFrame = []
+    #we need to choose a specific frame because crypt doesn't run at 30fps.
+    #so we just find the closest frame at a specific point and it works ok
+    #thank god bad apple is a consistent bpm lol
+    #2.3 comes from the bpm: 138bpm = 2.3bps.
+    #it's all divided by 4 because bolt + double tempo means it's 4 times faster than 2.3bps
+    #and times by 30 because the bad apple video is in 30fps
+    frame = int(i/2.3*30/4)
+    if not frame % 100:
+        print(int((i/2.3*30/4)))
+    if frame < int(cap.get(cv2.CAP_PROP_FRAME_COUNT)):
+        cap.set(1, frame)
+        res, frame = cap.read() #frame has your pixel values
+
+        #Get frame height and width to access pixels
+        height, width, channels = frame.shape
+
+        #Accessing BGR pixel values    
+        for x in range(0, height) :
+            oneFrame.append([])
+            for y in range(0, width) :
+                oneFrame[x].append([])
+                if frame[x,y,2] > 100:
+                    oneFrame[x][y] = 1
+                else:
+                    oneFrame[x][y] = 0
+        allFrames.append(oneFrame)
+    else:
+        break
+
+#write it in a format that's easy to copy to lua lol
+with open("output.txt", "w") as f:
+  f.write(str(allFrames).replace("[", "{").replace("]", "}").replace(" ", ""))
+#once you have this just copy and paste it over to dataFile.lua in the necrodancer folder
+</pre>
+<p>With that done, I still had to render the frames inside Crypt of the NecroDancer. I decided I'd do it by displaying white pixels as ice tiles, and black pixels as hot coals. Since I was already going to be making a mod for this, I could have made white and black tiles for the pixels, but I think the tiles from the base game look cooler.</p>
+<p>With some help from some people in the NecroDancer Discord servers and the <a href="https://vortexbuffer.com/synchrony/docs/">offical modding API documentation</a>, I was able to figure out how to place tiles. After that, I was then able to make one frame appear on the entire screen. I had to tweak the size of the video a bit to make sure the entire thing could show up at once.</p>
+<p>The next issue was making sure that the frames matched up with the audio. If you don't know, Crypt of the NecroDancer is a rhythm game, where you must make an input on every beat of the music. Since Bad Apple!!'s BPM is somewhat slow for an animation, I'd figure that the game would have to run at double speed, stacked on top of a character that moves at double tempo. Either way, the frame would match up with the music. The frame to be rendered would depend on how far along the song was, so it'd be synced up anyway.</p>
+<pre class="code-snippet">
+--this runs every beat
+event.turn.add("updateTile", {order="minimap"}, function(ev)
+    --the music doesn't start at 0 because of the disco descent fakeout, so offset it
+    local realMusicTime = Music.getMusicTime() - 7.59293
+    --this is the frame number, we need to calculate it so that late mp joiners are on the right beat (because lots of people will play this mod in multiplayer im sure)
+    --4 comes from bolt + double tempo, used from the python code
+    --actually im surprised, i just tested and it actually syncs to the music in regular tempo or double tempo :O
+    --but the fps is too slow to be good
+    local beatNumber = math.floor(2.3*4*realMusicTime) + 1
+    --dont run it in the lobby or it'll ruin the surprise!
+    if not CurrentLevel.isLobby() then
+        --only start rendering frames if the music actually begins
+        if beatNumber > 0 then
+            --hardcoded number of frames because #length doesn't work, idk why lol
+            --it's fiiine
+            if beatNumber <= 1993 then
+                --set each pixel in a grid
+                for i = 1, #data[1][1], 1 do
+                    for j = 1, #data[1], 1 do
+                        setTile(i - offsetX, j - offsetY, data[beatNumber][j][i])
+                    end
+                end
+            end
+        end
+    end
+end)
+</pre>
+<p>As a bonus of basing the frame off of the amount of time the music has been playing, it would be synced even for people who would join a multiplayer lobby or something like that. So, I decided to reveal my mod by hosting a lobby where people could join and see the glory of Bad Apple!!</p>
+<p>(Unfortunately, only two people joined...)</p>
+<p>I also wanted to make a "fakeout" intro to the song. I just used Audacity and made Disco Descent (from NecroDancer) gradually fade into Bad Apple!!</p>
+<p>Anyway, that's basically it. If you want to see my code, you can check my <a href="https://github.com/ChekinNooget/bad-apple-necrodancer">github repo</a>, and you can download the mod to try it out in the game <a href="https://mod.io/g/crypt/m/evilfruit">here</a>. (I named the mod "Evil Fruit" as a joke to also keep the Bad Apple!! a surprise, but one of the people who joined my lobby immediatelly saw through it, hence the thumbnail to my youtube video lol.)</p>
+<hr>
+<p>Bonus funny pictures</p>
+<img src="/images/pages/Programming Projects/Crypt of the NecroDancer/Bad Apple!!/bad_food_shop.png">
+<img src="/images/pages/Programming Projects/Crypt of the NecroDancer/Bad Apple!!/synchrony_api.png">

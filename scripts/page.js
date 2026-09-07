@@ -9,7 +9,7 @@ function loadImages() {
 }
 
 function youtube() {
-	const videos = document.getElementsByClassName("youtube_video");
+	const videos = document.getElementsByClassName("youtube-video");
 	for (let i = 0; i < videos.length; i++) {
 		var link = videos[i].textContent;
 		videos[i].innerHTML = `

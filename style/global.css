@@ -1,0 +1,43 @@
+:root {
+	--tab-background: #c17308;
+	--tab-was-selected-background: #f3a91b;
+	--tab-selected-background: #ff971a;
+
+	--main-background: #5a2e00;
+
+    --code-snippet-background: #221501;
+    --code-snippet-scroll-background: #111501;
+    --code-snippet-scroll-wheel: #7c726d;
+}
+
+body {
+	margin: 0px;
+	height: 100vh;
+	font-family: "Lato", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	background-color: var(--main-background);
+}
+
+a {
+	color: aqua;
+}
+a:visited {
+	color: rgb(37, 167, 167);
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+}
+
+pre {
+    overflow-x: scroll;
+}
+
+.code-snippet{
+    background-color: var(--code-snippet-background);
+    padding: 10px;
+
+    scrollbar-color: var(--code-snippet-scroll-wheel) var(--code-snippet-scroll-background);
+}
