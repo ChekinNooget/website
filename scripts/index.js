@@ -69,22 +69,32 @@ function onTabClick(name) {
 	var temp = "";
 	var newTabGroup = "";
 
-	allTabsWrapper.innerHTML = "";
-	for (let i = 0; i < currentPath.length + 1; i++) {
-		//add tabs for user to click
-		temp = "";
-        var tempSlicedChildren = getChildrenOfPath(currentPath.slice(0, i))
-		for (let j = 0; j < tempSlicedChildren.length; j++) {
-			var tempTabName = tempSlicedChildren[j];
+	if (tempGetChildren == false || tempGetChildren.length != 0) {
+		allTabsWrapper.innerHTML = "";
+
+		for (let i = 0; i < currentPath.length + 1; i++) {
+			//add tabs for user to click
+			temp = "";
+			var tempSlicedChildren = getChildrenOfPath(currentPath.slice(0, i));
+			for (let j = 0; j < tempSlicedChildren.length; j++) {
+				var tempTabName = tempSlicedChildren[j];
+				temp += `<div class="tab_item" onClick="onTabClick('${tempTabName}')">${tempTabName}</div>`;
+			}
+
+			//add a group of tabs for each "layer" in the json that the user can see
+			var newTabGroup = "";
+			if (temp != "" || i != currentPath.length) {
+				newTabGroup = `<div class="tab_group_${i} tab_group">${temp}</div>`;
+			}
+
+			allTabsWrapper.innerHTML = allTabsWrapper.innerHTML + newTabGroup;
+		}
+	} else {
+		for (let j = 0; j < tempGetChildren.length; j++) {
+			var tempTabName = tempGetChildren[j];
 			temp += `<div class="tab_item" onClick="onTabClick('${tempTabName}')">${tempTabName}</div>`;
 		}
-
-		//add a group of tabs for each "layer" in the json that the user can see
-		var newTabGroup = "";
-		if (temp != "" || i != currentPath.length) {
-			newTabGroup = `<div class="tab_group_${i} tab_group">${temp}</div>`;
-		}
-
+		newTabGroup = `<div class="tab_group_${tempGetChildren.length - 1} tab_group">${temp}</div>`;
 		allTabsWrapper.innerHTML = allTabsWrapper.innerHTML + newTabGroup;
 	}
 
@@ -124,14 +134,15 @@ function onTabClick(name) {
 					i.insertAdjacentHTML("afterend", content);
 					i.remove();
 				}
+
+				runWhenPageLoaded();
 			});
 		});
 	});
-
-	//loadImages() do this eventually
 }
 
-function getChildrenOfPath(path, changeRedirect = false) {
+function getChildrenOfPath(path) {
+	console.log(1);
 	var tempString = "";
 	redirectPath = path;
 
@@ -140,8 +151,6 @@ function getChildrenOfPath(path, changeRedirect = false) {
 
 		try {
 			if (eval(`Object.keys(data${tempString})`).includes("redirect") && i <= redirectPath.length - 1) {
-				changeRedirect = true;
-
 				var newPath = eval(`data${tempString}['redirect']`);
 				var tempString = "";
 
@@ -152,7 +161,7 @@ function getChildrenOfPath(path, changeRedirect = false) {
 				if (i < path.length - 1) {
 					redirectPath = newPath.concat(redirectPath.slice(i + 1, path.length));
 				}
-                /*
+				/*
                 console.log("newPath: " + newPath)
                 console.log("tempString: " + tempString)
                 console.log("redirectPath: " + redirectPath)
@@ -160,7 +169,7 @@ function getChildrenOfPath(path, changeRedirect = false) {
 			}
 		} catch (err) {}
 	}
-    /*
+	/*
     console.log("FINAL: " + newPath)
     console.log("tempString: " + tempString)
     console.log("redirectPath: " + redirectPath)
