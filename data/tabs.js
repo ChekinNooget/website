@@ -1,13 +1,20 @@
 var pages = {
 	"Main": {},
 	"Programming Projects": {
-		"Bad Apple!!": {},
+		"Crypt of the NecroDancer": {
+			"Arrhythmeow": {},
+			"Bad Apple!!": {
+				"Code": {},
+			},
+		},
 	},
 	"Video Games": {
 		"Crypt of the NecroDancer": {
 			"Review": {},
 			"Coda": {},
-			"Mods": {},
+			"Mods": {
+				"redirect": ["Programming Projects", "Crypt of the NecroDancer"],
+			},
 			"Levels": {},
 		},
 		"FTL": {},

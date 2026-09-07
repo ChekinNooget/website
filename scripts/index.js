@@ -1,6 +1,8 @@
 var data = pages; //import this from the other data file
 var selected = "";
 var currentPath = []; //path should be ["thing", "next thing"] all the way to where user is selected like data["thing"]
+var currentFilePath = []; //path should be ["thing", "next thing"] all the way to where user is selected like data["thing"]
+var redirectPath = [];
 const spaceChar = "+"; //character that replaces the space in the url
 const joinChar = "---"; //character that separates tabs from each other
 
@@ -27,14 +29,18 @@ window.addEventListener("load", function () {
 });
 
 function onTabClick(name) {
-	selected = name;
-	if (getRecursive(currentPath.concat(selected)) != false) {
-		currentPath = currentPath.concat(selected);
-	} else if (getRecursive(currentPath.concat(selected)).length == 0) {
-		currentPath = currentPath.concat(selected);
+	var tempGetRecursive = getRecursive(currentPath.concat(name));
+
+	if (tempGetRecursive != false) {
+		currentPath = currentPath.concat(name);
+		currentFilePath = currentFilePath.concat(name);
+	} else if (tempGetRecursive.length == 0) {
+		currentPath = currentPath.concat(name);
+		currentFilePath = currentFilePath.concat(name);
 	} else {
-		currentPath = [selected];
-		var tempFind = selected;
+		currentPath = [name];
+		currentFilePath = [name];
+		var tempFind = name;
 		while (true) {
 			var tempFound = false;
 			for (const a of document.querySelectorAll(".tab_item")) {
@@ -46,11 +52,10 @@ function onTabClick(name) {
 						break;
 					}
 
-					tempFind = document
-						.querySelector(`.tab_group_${a.parentElement.className.split("tab_group_")[1].split(" ")[0] - 1}`)
-						.querySelector(".was_selected").textContent;
+					tempFind = document.querySelector(`.tab_group_${a.parentElement.className.split("tab_group_")[1].split(" ")[0] - 1}`).querySelector(".was_selected").textContent;
 
 					currentPath.unshift(tempFind);
+					currentFilePath.unshift(tempFind);
 					break;
 				}
 			}
@@ -84,7 +89,7 @@ function onTabClick(name) {
 
 	//color the tabs if they are selected
 	for (const a of document.querySelectorAll(".tab_item")) {
-		if (a.textContent == selected) {
+		if (a.textContent == name) {
 			a.classList.add("selected");
 		}
 		if (currentPath.includes(a.textContent)) {
@@ -105,7 +110,13 @@ function onTabClick(name) {
 	mainContentWrapper.innerHTML = `<include class="main_content" src="./pages/${currentPath.join("/")}.html">Loading...</include>`;
 	const includes = document.getElementsByTagName("include");
 	[].forEach.call(includes, (i) => {
-		let filePath = i.getAttribute("src");
+		let filePath = "";
+		if (redirectPath.length > 0) {
+			filePath = `./pages/${redirectPath.join("/")}.html`;
+		} else {
+			filePath = i.getAttribute("src");
+		}
+
 		fetch(filePath).then((file) => {
 			file.text().then((content) => {
 				if (i.parentElement != null) {
@@ -119,15 +130,36 @@ function onTabClick(name) {
 	//loadImages() do this eventually
 }
 
-function getRecursive(path) {
+function getRecursive(path, changeRedirect = false) {
 	var tempString = "";
+	redirectPath = path;
+
 	for (let i = 0; i < path.length; i++) {
 		tempString = tempString + `['${path[i]}']`;
+
+		try {
+			if (eval(`Object.keys(data${tempString})`).includes("redirect") && i <= redirectPath.length - 1) {
+				changeRedirect = true;
+
+				var newPath = eval(`data${tempString}['redirect']`);
+				var tempString = "";
+
+				for (let j = 0; j < newPath.length; j++) {
+					tempString = tempString + `['${newPath[j]}']`;
+				}
+
+				if (i < path.length - 1) {
+					redirectPath = newPath.concat(redirectPath.slice(i + 1, path.length));
+				}
+			}
+		} catch (err) {}
 	}
+    
 	try {
-		eval(`Object.keys(data${tempString})`);
-		return eval(`Object.keys(data${tempString})`);
+		var childTabs = eval(`Object.keys(data${tempString})`);
+		return childTabs;
 	} catch (err) {
+		console.log("Error in getRecursive: " + err);
 		return false;
 	}
 }
